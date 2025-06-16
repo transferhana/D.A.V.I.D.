@@ -1,2 +1,4 @@
 voila
 ipywidgets
+notebook
+jupyter
