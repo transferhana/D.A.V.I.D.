@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: david-voila
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: voila DAVID_mk7.ipynb --port=10000 --no-browser --Voila.ip=0.0.0.0
+    plan: free
