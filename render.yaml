@@ -3,5 +3,5 @@ services:
     name: david-voila
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: voila DAVID_Latest.ipynb --port=10000 --no-browser --Voila.ip=0.0.0.0
+    startCommand: voila DAVID_latest.ipynb --strip_sources=True --port=10000 --Voila.ip=0.0.0.0
     plan: free
