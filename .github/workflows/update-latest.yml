@@ -21,5 +21,5 @@ jobs:
           git config user.name github-actions
           git config user.email actions@github.com
           git add DAVID_latest.ipynb
-          git diff-index --quiet HEAD || git commit -m "Auto-update DAVID_latest.ipynb"
+          git commit -am "Auto-update DAVID_latest.ipynb" || echo "No changes"
           git push
