@@ -1,1 +1,1 @@
-cp DAVID_mk8.ipynb DAVID_latest.ipynb
+jupyter trust DAVID_latest.ipynb
