@@ -1,0 +1,87 @@
+# 핵심 데이터 저장소
+todo_items = []
+
+# 전체 진행률 업데이트
+def update_overall_progress():
+    if not todo_items:
+        overall_progress.value = 0
+        overall_percent_label.value = '(0%)'
+        overall_progress.bar_style = ''
+    else:
+        avg = sum(item['progress'] for item in todo_items) / len(todo_items)
+        overall_progress.value = avg
+        overall_percent_label.value = f'({int(avg)}%)'
+        overall_progress.style = {'bar_color': get_bar_style(avg)}'
+
+# 저장 / 불러오기 (장기 기억)
+def save_tasks(b):
+    with open('tasks.json', 'w') as f:
+        import json
+        json.dump(todo_items, f, default=str)
+
+def load_tasks(b):
+    try:
+        with open('tasks.json', 'r') as f:
+            import json
+            from datetime import datetime
+            raw = json.load(f)
+            todo_items.clear()
+            for item in raw:
+                todo_items.append({
+                    'title': item['title'],
+                    'progress': item['progress'],
+                    'due_date': datetime.strptime(item['due_date'], '%Y-%m-%d').date(),
+                    'priority': item['priority']
+                })
+            refresh_task_list()
+    except:
+        pass
+
+# 개별 할 일 UI 생성
+def create_task_ui(title, progress, due_date, priority, index):
+    title_label = widgets.HTML(value=f"<b># {index + 1}. {title}</b>")
+    progress_bar = widgets.FloatProgress(value=progress, min=0, max=100, layout=layout_progress)
+    progress_bar.style = {'bar_color': get_bar_style(progress)}
+    slider = widgets.IntSlider(value=progress, min=0, max=100, step=5, layout=layout_progress)
+    slider_label = widgets.Label(f"{progress}%")
+    
+    due_label = widgets.Label(f"{due_date}")
+    priority_label = widgets.Label(priority)
+
+    complete_btn = widgets.Button(description='완료✅', layout=layout_half)
+    delete_btn = widgets.Button(description='삭제❌', layout=layout_half)
+    button_box = widgets.HBox([complete_btn, delete_btn], layout=layout_input)
+
+    task_ui = widgets.VBox([
+        title_label,
+        widgets.HBox([widgets.Label("진행률", layout=widgets.Layout(width='15%')), progress_bar, slider_label]),
+        widgets.HBox([widgets.Label("마감일"), due_label, widgets.Label("중요도"), priority_label]),
+        button_box
+    ], layout=widgets.Layout(border='1px solid #ccc', padding='10px', margin='10px 0'))
+
+    return task_ui
+
+# 새로운 할 일 추가
+def add_task(b):
+    if not title_input.value.strip():
+        return
+    todo_items.append({
+        'title': title_input.value.strip(),
+        'progress': progress_input.value,
+        'due_date': due_input.value or date.today(),
+        'priority': priority_input.value
+    })
+    title_input.value = ''
+    progress_input.value = 0
+    due_input.value = None
+    priority_input.value = '보통'
+    refresh_task_list()
+
+# 완료 버튼 기능
+def mark_complete(b):
+    slider.value = 100
+
+# 삭제 버튼 기능
+def delete_item(b):
+    todo_items.pop(index)
+    refresh_task_list()
